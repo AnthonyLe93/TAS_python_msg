@@ -4,8 +4,8 @@ from TAS_python_msg.msg import ati
 
 
 def talker():
-    pub = rospy.Publisher('ATI_readings', ati, queue_size=10)
-    rospy.init_node('ATI')
+    pub = rospy.Publisher('ati_readings', ati, queue_size=10)
+    rospy.init_node('ati_pub', anonymous=True)
     r = rospy.Rate(10)  # 10 Hz
 
     msg = ati()
