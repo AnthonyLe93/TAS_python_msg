@@ -13,14 +13,18 @@
   <!-- One license tag required, multiple allowed, one license per tag -->
   <!-- Commonly used license strings: -->
   <!--   BSD, MIT, Boost Software License, GPLv2, GPLv3, LGPLv2.1, LGPLv3 -->
-  <license>TODO</license>
+  <license>Apache-2.0</license>
+  <license>BSD-2-Clause</license>
+  <license>Zlib</license>
 
 
   <!-- Url tags are optional, but multiple are allowed, one per tag -->
   <!-- Optional attribute type can be: website, bugtracker, or repository -->
   <!-- Example: -->
   <!-- <url type="website">http://wiki.ros.org/TAS_python_msg</url> -->
-
+  <url type="website">https://tasfunctionality.bristol.ac.uk/</url>
+  <url type="bugtracker">https://github.com/AnthonyLe93/TAS_python_msg/issues</url>
+  <url type="repository">https://github.com/AnthonyLe93/TAS_python_msg</url>
 
   <!-- Author tags are optional, multiple are allowed, one per tag -->
   <!-- Authors do not have to be maintainers, but could be -->

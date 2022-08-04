@@ -52,6 +52,7 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(
    FILES
    ati.msg
+   ATI_mini45.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -169,6 +170,7 @@ include_directories(
 ## in contrast to setup.py, you can choose the destination
 catkin_install_python(PROGRAMS
   src/ati_pub.py
+  src/ati_message.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
