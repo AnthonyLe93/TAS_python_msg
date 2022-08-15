@@ -10,6 +10,8 @@ import u6
 MAX_REQUESTS = 75
 # SCAN_FREQUENCY is the scan frequency of stream mode in Hz
 SCAN_FREQUENCY = 5000
+
+
 class ATI_readings:
     # using labjack u6
 
@@ -25,6 +27,8 @@ class ATI_readings:
                                     ResolutionIndex=self.resolutionIndex, ScanFrequency=SCAN_FREQUENCY)'''
 
         self.rawData = []
+
+
 
     def __str__(self):
         printOut = '''
@@ -45,33 +49,30 @@ class ATI_readings:
         channel3 = self.daq_device.getAIN(6)
         channel4 = self.daq_device.getAIN(8)
         channel5 = self.daq_device.getAIN(10)
-        rawData = [channel0, channel1, channel2, channel3, channel4, channel5]
-        return rawData
+        self.rawData = [channel0, channel1, channel2, channel3, channel4, channel5]
 
-
-    def talker(self):
-        pub = rospy.Publisher('ati_readings', ati, queue_size=10)
+    def talker(self, msg):
+        pub = rospy.Publisher('ati_readings', msg, queue_size=10)
         rospy.init_node('ati_pub', anonymous=True)
         r = rospy.Rate(10)  # 10 Hz
-
-        msg = ati()
         msg.name = 'ATI_loadcell_ID'
-        msg.x = data[0]
-        msg.y = data[0]
-        msg.z = data[0]
-        msg.mx = data[0]
-        msg.my = data[0]
-        msg.mz = data[0]
+        msg.x = 0
+        msg.y = 1
+        msg.z = 2
+        msg.mx = 3
+        msg.my = 4
+        msg.mz = 5
 
-    while not rospy.is_shutdown():
-        rospy.loginfo(msg)
-        #print(msg.name, msg.x, msg.y, msg.mx, msg.my, msg.mz)
-        pub.publish(msg)
-        r.sleep()
+        while not rospy.is_shutdown():
+            rospy.loginfo(ati)
+            #print(msg.name, msg.x, msg.y, msg.mx, msg.my, msg.mz)
+            pub.publish(ati)
+            r.sleep()
 
 
 if __name__ == '__main__':
-    ati = ATI_readings(resolutionIndex=1, gainIndex=0, settlingFactor=0, differential=True)
-    ati.talker()
+    ati_ft = ATI_readings(resolutionIndex=1, gainIndex=0, settlingFactor=0, differential=True)
+    print(ati_ft.__str__())
+    ati_ft.talker(ati)
 
 
