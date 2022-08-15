@@ -51,28 +51,30 @@ class ATI_readings:
         channel5 = self.daq_device.getAIN(10)
         self.rawData = [channel0, channel1, channel2, channel3, channel4, channel5]
 
-    def talker(self, msg):
-        pub = rospy.Publisher('ati_readings', msg, queue_size=10)
+    def talker(self):
+        pub = rospy.Publisher('ati_readings', ati, queue_size=10)
         rospy.init_node('ati_pub', anonymous=True)
         r = rospy.Rate(10)  # 10 Hz
+        msg = ati()
         msg.name = 'ATI_loadcell_ID'
-        msg.x = 0
-        msg.y = 1
-        msg.z = 2
-        msg.mx = 3
-        msg.my = 4
-        msg.mz = 5
+        msg.x = self.rawData[0]
+        msg.y = self.rawData[1]
+        msg.z = self.rawData[2]
+        msg.mx = self.rawData[3]
+        msg.my = self.rawData[4]
+        msg.mz = self.rawData[5]
 
         while not rospy.is_shutdown():
-            rospy.loginfo(ati)
+            rospy.loginfo(msg)
             #print(msg.name, msg.x, msg.y, msg.mx, msg.my, msg.mz)
-            pub.publish(ati)
+            pub.publish(msg)
             r.sleep()
 
 
 if __name__ == '__main__':
     ati_ft = ATI_readings(resolutionIndex=1, gainIndex=0, settlingFactor=0, differential=True)
     print(ati_ft.__str__())
-    ati_ft.talker(ati)
+    ati_ft.getAnalogChannels()
+    ati_ft.talker()
 
 
