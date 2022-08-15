@@ -12,7 +12,7 @@ def talker():
     msg.name = 'ATI_loadcell_ID'
     msg.x = 1.0
     msg.y = 2.0
-    msg.y = 3.0
+    msg.z = 3.0
     msg.mx = 4.0
     msg.my = 5.0
     msg.mz = 6.0
