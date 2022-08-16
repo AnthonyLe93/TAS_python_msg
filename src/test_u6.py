@@ -22,9 +22,9 @@ class ATI_readings:
         self.differential = kwargs['differential']
         self.daq_device = u6.U6()
         self.daq_device.getCalibrationData()
-        '''self.daq_device.streamConfig(NumChannels=6, ChannelNumbers=[0, 2, 4, 6, 8, 10],\
+        self.daq_device.streamConfig(NumChannels=6, ChannelNumbers=[0, 2, 4, 6, 8, 10],\
                                     ChannelOptions=[0, 0, 0, 0, 0, 0], SettlingFactor=self.settlingFactor,
-                                    ResolutionIndex=self.resolutionIndex, ScanFrequency=SCAN_FREQUENCY)'''
+                                    ResolutionIndex=self.resolutionIndex, ScanFrequency=SCAN_FREQUENCY)
 
         self.rawData = []
 
@@ -50,6 +50,7 @@ class ATI_readings:
         channel4 = self.daq_device.getAIN(8)
         channel5 = self.daq_device.getAIN(10)
         self.rawData = [channel0, channel1, channel2, channel3, channel4, channel5]
+        print(self.rawData)
 
     def talker(self):
         pub = rospy.Publisher('ati_readings', ati, queue_size=10)
@@ -75,6 +76,6 @@ if __name__ == '__main__':
     ati_ft = ATI_readings(resolutionIndex=1, gainIndex=0, settlingFactor=0, differential=True)
     print(ati_ft.__str__())
     ati_ft.getAnalogChannels()
-    ati_ft.talker()
+    #ati_ft.talker()
 
 

@@ -54,7 +54,8 @@ class ATI_ft():
             print(f'fx: {fx}, fy: {fy}, fz: {fz}, mx: {mx}, my: {my}, mz: {mz}')
             self.set_robot_to_mode(RobotMode.POWER_OFF)
 
-        print(f'fx: {fx}, fy: {fy}, fz: {fz}, mx: {mx}, my: {my}, mz: {mz}')
+        #print(f'fx: {fx}, fy: {fy}, fz: {fz}, mx: {mx}, my: {my}, mz: {mz}')
+        rospy.loginfo(ati)
 
     def set_robot_to_mode(self, target_mode):
         timeout = rospy.Duration(5)
