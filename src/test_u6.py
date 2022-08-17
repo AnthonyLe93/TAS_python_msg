@@ -7,6 +7,7 @@ import u6
 from LabJackPython import NullHandleException
 import time
 import numpy
+from matplotlib import pyplot, animation
 
 # MAX_REQUESTS is the number of packets to be read.
 MAX_REQUESTS = 75
@@ -60,7 +61,7 @@ class ATI_readings:
                     [0.1045067140, -0.708440304, 0.0849889820, -0.710842342, 0.0348277400, -0.683977902]]
         offSetCorrection = self.rawData - numpy.transpose(bias)
         self.forces = numpy.dot(userAxis, numpy.transpose(offSetCorrection))
-        print(f'forces {self.forces}')
+        #print(f'forces {self.forces}')
 
     def isConnected(self):
         if self.daq_device is None:
@@ -74,15 +75,15 @@ class ATI_readings:
         r = rospy.Rate(10)  # 10 Hz
         msg = ati()
         msg.name = 'ATI_FT35016'
-        msg.x = self.rawData[0]
-        msg.y = self.rawData[1]
-        msg.z = self.rawData[2]
-        msg.mx = self.rawData[3]
-        msg.my = self.rawData[4]
-        msg.mz = self.rawData[5]
+        msg.x = self.forces[0]
+        msg.y = self.forces[1]
+        msg.z = self.forces[2]
+        msg.mx = self.forces[3]
+        msg.my = self.forces[4]
+        msg.mz = self.forces[5]
 
         #while not rospy.is_shutdown():
-        #rospy.loginfo(msg)
+        rospy.loginfo(msg)
         #print(msg.name, msg.x, msg.y, msg.mx, msg.my, msg.mz)
         pub.publish(msg)
         r.sleep()
@@ -94,6 +95,7 @@ if __name__ == '__main__':
     start = datetime.now()
     print(f"Start time is {start}")
     timeout = time.time() + 5
+
 
     while time.time() < timeout:
         ati_ft.getAnalogChannels()
