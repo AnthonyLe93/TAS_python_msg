@@ -6,6 +6,7 @@ from datetime import datetime
 import u6
 from LabJackPython import NullHandleException
 import time
+import numpy
 
 # MAX_REQUESTS is the number of packets to be read.
 MAX_REQUESTS = 75
@@ -23,13 +24,8 @@ class ATI_readings:
         self.differential = kwargs['differential']
         self.daq_device = u6.U6()
         self.daq_device.getCalibrationData()
-        '''self.daq_device.streamConfig(NumChannels=6, ChannelNumbers=[0, 2, 4, 6, 8, 10],\
-                                    ChannelOptions=[0, 0, 0, 0, 0, 0], SettlingFactor=self.settlingFactor,
-                                    ResolutionIndex=self.resolutionIndex, ScanFrequency=SCAN_FREQUENCY)'''
-
         self.rawData = []
-
-
+        self.forces = []
 
     def __str__(self):
         printOut = '''
@@ -52,7 +48,19 @@ class ATI_readings:
         channel4 = self.daq_device.getAIN(8)
         channel5 = self.daq_device.getAIN(10)
         self.rawData = [channel0, channel1, channel2, channel3, channel4, channel5]
-        print(self.rawData)
+        #print(self.rawData)
+
+    def convertingRawData(self):
+        bias = [-0.276239448369779, -0.548866338705011, 0.3790169354574573, -0.03188614631380915, -0.18059890254244237, 0.2646386456722212]
+        userAxis = [[-1.548979761, 0.1884502090, 5.8967571490, -48.38976343, -3.046532067, 46.300900810],
+                    [-7.146532849, 55.028037290, 0.4930935770, -28.03857447, 4.4214399430, -26.78444170],
+                    [69.408622200, 1.6678919470, 69.830354820, 2.8068233740, 65.972226370, 2.3081625690],
+                    [-0.061111397, 0.3890235240, -1.113368181, -0.245195740, 1.1272834260, -0.147965939],
+                    [1.2734045750, 0.0406643920, -0.695352495, 0.3113292350, -0.587150713, -0.349685365],
+                    [0.1045067140, -0.708440304, 0.0849889820, -0.710842342, 0.0348277400, -0.683977902]]
+        offSetCorrection = self.rawData - numpy.transpose(bias)
+        self.forces = numpy.dot(userAxis, numpy.transpose(offSetCorrection))
+        print(f'forces {self.forces}')
 
     def isConnected(self):
         if self.daq_device is None:
@@ -65,7 +73,7 @@ class ATI_readings:
         rospy.init_node('ati_pub', anonymous=True)
         r = rospy.Rate(10)  # 10 Hz
         msg = ati()
-        msg.name = 'ATI_loadcell_ID'
+        msg.name = 'ATI_FT35016'
         msg.x = self.rawData[0]
         msg.y = self.rawData[1]
         msg.z = self.rawData[2]
@@ -74,7 +82,7 @@ class ATI_readings:
         msg.mz = self.rawData[5]
 
         #while not rospy.is_shutdown():
-        rospy.loginfo(msg)
+        #rospy.loginfo(msg)
         #print(msg.name, msg.x, msg.y, msg.mx, msg.my, msg.mz)
         pub.publish(msg)
         r.sleep()
@@ -85,10 +93,11 @@ if __name__ == '__main__':
     print(ati_ft.__str__())
     start = datetime.now()
     print(f"Start time is {start}")
-    timeout = time.time() + 30
+    timeout = time.time() + 5
 
     while time.time() < timeout:
         ati_ft.getAnalogChannels()
+        ati_ft.convertingRawData()
         ati_ft.talker()
         if not DAQ_STATE:
             print('DAQ is disconnected!')
