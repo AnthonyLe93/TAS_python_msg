@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 import rospy
 from TAS_python_msg.msg import ati
-import math
 from datetime import datetime
 import u6
 from LabJackPython import NullHandleException
 import time
 import numpy
-from matplotlib import pyplot, animation
+
 
 # MAX_REQUESTS is the number of packets to be read.
 MAX_REQUESTS = 75
@@ -52,7 +51,7 @@ class ATI_readings:
         #print(self.rawData)
 
     def convertingRawData(self):
-        bias = [-0.276239448369779, -0.548866338705011, 0.3790169354574573, -0.03188614631380915, -0.18059890254244237, 0.2646386456722212]
+        bias = [-0.28026725005202024, -0.5628451798374954, 0.36969605272634, -0.021619200849272602, -0.1790193724709752, 0.2219047680659969]
         userAxis = [[-1.548979761, 0.1884502090, 5.8967571490, -48.38976343, -3.046532067, 46.300900810],
                     [-7.146532849, 55.028037290, 0.4930935770, -28.03857447, 4.4214399430, -26.78444170],
                     [69.408622200, 1.6678919470, 69.830354820, 2.8068233740, 65.972226370, 2.3081625690],
@@ -61,7 +60,9 @@ class ATI_readings:
                     [0.1045067140, -0.708440304, 0.0849889820, -0.710842342, 0.0348277400, -0.683977902]]
         offSetCorrection = self.rawData - numpy.transpose(bias)
         self.forces = numpy.dot(userAxis, numpy.transpose(offSetCorrection))
-        #print(f'forces {self.forces}')
+        #print(self.rawData)
+        #print(offSetCorrection)
+        print(f'forces {self.forces}')
 
     def isConnected(self):
         if self.daq_device is None:
@@ -72,7 +73,7 @@ class ATI_readings:
     def talker(self):
         pub = rospy.Publisher('ati_readings', ati, queue_size=10)
         rospy.init_node('ati_pub', anonymous=True)
-        r = rospy.Rate(10)  # 10 Hz
+        r = rospy.Rate(100)  # 10 Hz
         msg = ati()
         msg.name = 'ATI_FT35016'
         msg.x = self.forces[0]
@@ -83,7 +84,7 @@ class ATI_readings:
         msg.mz = self.forces[5]
 
         #while not rospy.is_shutdown():
-        rospy.loginfo(msg)
+        #rospy.loginfo(msg)
         #print(msg.name, msg.x, msg.y, msg.mx, msg.my, msg.mz)
         pub.publish(msg)
         r.sleep()
@@ -94,7 +95,7 @@ if __name__ == '__main__':
     print(ati_ft.__str__())
     start = datetime.now()
     print(f"Start time is {start}")
-    timeout = time.time() + 5
+    timeout = time.time() + 30
 
 
     while time.time() < timeout:
