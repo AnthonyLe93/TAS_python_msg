@@ -62,7 +62,7 @@ class ATI_readings:
         self.forces = numpy.dot(userAxis, numpy.transpose(offSetCorrection))
         #print(self.rawData)
         #print(offSetCorrection)
-        print(f'forces {self.forces}')
+        #print(f'forces {self.forces}')
 
     def isConnected(self):
         if self.daq_device is None:
@@ -73,7 +73,7 @@ class ATI_readings:
     def talker(self):
         pub = rospy.Publisher('ati_readings', ati, queue_size=10)
         rospy.init_node('ati_pub', anonymous=True)
-        r = rospy.Rate(100)  # 10 Hz
+        r = rospy.Rate(100)  # 100 Hz
         msg = ati()
         msg.name = 'ATI_FT35016'
         msg.x = self.forces[0]
@@ -84,7 +84,7 @@ class ATI_readings:
         msg.mz = self.forces[5]
 
         #while not rospy.is_shutdown():
-        #rospy.loginfo(msg)
+        rospy.loginfo(msg)
         #print(msg.name, msg.x, msg.y, msg.mx, msg.my, msg.mz)
         pub.publish(msg)
         r.sleep()
@@ -95,10 +95,10 @@ if __name__ == '__main__':
     print(ati_ft.__str__())
     start = datetime.now()
     print(f"Start time is {start}")
-    timeout = time.time() + 30
+    timeout = time.time() + 60
 
-
-    while time.time() < timeout:
+    # time.time() < timeout # running for specify amount of time
+    while not rospy.is_shutdown():
         ati_ft.getAnalogChannels()
         ati_ft.convertingRawData()
         ati_ft.talker()
