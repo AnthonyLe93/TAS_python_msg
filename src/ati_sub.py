@@ -49,11 +49,11 @@ class ATI_ft():
         # np.savetxt(save_path + 'ati_forces.txt', force_array)
         # right now set to the max torque of the ati mini45 ft sensor
         # the end effector of the ur10 has a max torque of 56Nm
-        if fx >= 290.0 or fy >= 290.0 or fz >= 580.0 or mx >= 10.0 or my >= 10.0 or mz >= 10.0:
-            # #fx >= 10 or fy >= 10 or fz >= 10 or mx >= 10 or my >= 10 or mz >= 10:
+        if self.isViolation(ati):
             rospy.loginfo("Abort!!!\n" "Max force/torque violation!!!.")
             print(f'fx: {fx}, fy: {fy}, fz: {fz}, mx: {mx}, my: {my}, mz: {mz}')
             self.set_robot_to_mode(RobotMode.POWER_OFF)
+
 
         #print(f'fx: {fx}, fy: {fy}, fz: {fz}, mx: {mx}, my: {my}, mz: {mz}')
         rospy.loginfo(ati)
@@ -75,6 +75,18 @@ class ATI_ft():
         set_mode_client.wait_for_result()
         return set_mode_client.get_result().success
 
+    def isViolation(self, ati):
+        fx = ati.x
+        fy = ati.y
+        fz = ati.z
+        mx = ati.mx
+        my = ati.my
+        mz = ati.mz
+        if fx >= 290.0 or fy >= 290.0 or fz >= 580.0 or mx >= 10.0 or my >= 10.0 or mz >= 10.0:
+            return True
+        elif fx <= -290.0 or fy <= -290.0 or fz <= -5.0 or mx <= -10.0 or my <= -10.0 or mz <= -10.0:
+            return True
+        return False
 
 if __name__ == '__main__':
     load_cell = ATI_ft()
